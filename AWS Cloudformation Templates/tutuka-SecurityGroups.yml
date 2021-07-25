@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Security Groups for tutuka'
+
+Parameters:
+  VPC:
+    Default: 'vpc-0cd4e2eb39052359f'
+    Description: Select VPC ID
+    Type: 'AWS::EC2::VPC::Id'
+
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Select VPC for Security Groups
+        Parameters:
+          - VPC
+    ParameterLabels:
+      VPC:
+        default: VPC ID
+
+Resources:
+  EC2SecGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Security group for tutuka EC2.
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - { FromPort: '22', ToPort: '22', IpProtocol: tcp, CidrIp: 0.0.0.0/0 }
+      Tags:
+        - { Key: Name, Value: !Sub '${AWS::StackName} - EC2SecGroup' }
+
+  RedisSecGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Security group for Redis.
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - { FromPort: '6379', ToPort: '6379', IpProtocol: tcp, SourceSecurityGroupId: !Ref 'EC2SecGroup' }
+        - { FromPort: '6379', ToPort: '6379', IpProtocol: tcp, SourceSecurityGroupId: !Ref 'ECSSecGroup' }
+      Tags:
+        - { Key: Name, Value: !Sub '${AWS::StackName} - RedisSecGroup' }
+  ECSSecGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Security group for ECS.
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - { FromPort: '22', ToPort: '22', IpProtocol: tcp, CidrIp: 0.0.0.0/0 }
+      Tags:
+        - { Key: Name, Value: !Sub '${AWS::StackName} - EFSSecGroup' }
+Outputs:
+  EC2SecGroup:
+    Description: Security group for EC2.
+    Value: !Ref 'EC2SecGroup'
+    Export:
+      Name: !Sub '${AWS::StackName}-EC2SecGroup'
+  ECSSecGroup:
+    Description: Security group for ECS.
+    Value: !Ref 'ECSSecGroup'
+    Export:
+      Name: !Sub '${AWS::StackName}-ECSSecGroup'
+  RedisSecGroup:
+    Description: Security group for Redis.
+    Value: !Ref 'RedisSecGroup'
+    Export:
+      Name: !Sub '${AWS::StackName}-RedisSecGroup'

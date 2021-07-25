@@ -1,0 +1,108 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ElastiCache CF stack
+Parameters:
+  VPC:
+    Type: AWS::EC2::VPC::Id
+    Default: 'vpc-0cd4e2eb39052359f'
+  Subnet: 
+    Type: AWS::EC2::Subnet::Id
+    Default: 'subnet-0b1a592de659a02a2'
+  ClusterName:
+    Description: Custom name of the cluster. 
+    Type: String
+    AllowedPattern: "^[a-zA-Z][-a-zA-Z0-9]*$"
+    Default: 'Redis-tutuka'
+  CacheNodeType:
+    Description: Cache node instance class
+    Type: String
+    Default: cache.t2.micro
+    ConstraintDescription: Node instance class not supported
+    AllowedValues:
+      - cache.t2.micro
+      - cache.t2.small
+      - cache.t2.medium
+      - cache.m4.large
+      - cache.m4.xlarge
+      - cache.m4.2xlarge
+      - cache.m4.4xlarge
+      - cache.m4.10xlarge
+      - cache.r4.large
+      - cache.r4.xlarge
+      - cache.r4.2xlarge
+      - cache.r4.4xlarge
+      - cache.r4.8xlarge
+      - cache.r4.16xlarge
+
+  CacheEngine:
+    Description: The underlying cache engine
+    Type: String
+    Default: redis
+    ConstraintDescription: Node instance class not supported
+    AllowedValues:
+      - redis
+
+  CacheNodeCount:
+    Description: Number of nodes in the cluster.
+    Type: Number
+    MinValue: 1
+    MaxValue: 15
+    ConstraintDescription: Node count must be between 1 and 15
+    Default: 1
+
+  AutoMinorVersionUpgrade:
+    Description: Whether or not minor version upgrades to the cache engine should be applied automatically during the maintenance window.
+    Type: String
+    Default: false
+    AllowedValues:
+      - true
+      - false
+
+Resources:
+
+  SubnetGroup:
+    Type: AWS::ElastiCache::SubnetGroup
+    Properties:
+      Description: Cache Subnet Group
+      SubnetIds: 
+        - !Ref Subnet
+
+  ElastiCacheCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      AutoMinorVersionUpgrade: !Ref AutoMinorVersionUpgrade
+      Engine: !Ref CacheEngine
+      CacheNodeType: !Ref CacheNodeType
+      ClusterName : !Ref ClusterName
+      NumCacheNodes:  !Ref CacheNodeCount
+      CacheSubnetGroupName: !Ref SubnetGroup
+      VpcSecurityGroupIds:
+         - !ImportValue 'tutuka-SecurityGroups-ECSSecGroup'
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+
+Outputs:
+
+  ElastiCacheStackName:
+    Description: ElastiCache Stack Name
+    Value: !Ref AWS::StackName
+    Export:
+      Name: !Sub ${AWS::StackName}-ElastiCacheName
+
+  ElastiCacheClusterArn:
+    Description: ElastiCache Cluster Arn
+    Value: !Sub arn:aws:elasticache:${AWS::Region}:${AWS::AccountId}:cluster/${ElastiCacheCluster}
+    Export:
+      Name: !Sub ${AWS::StackName}-ElastiCacheClusterArn
+
+  ElastiCacheClusterId:
+    Description: ElastiCache Cluster ID
+    Value: !Ref ElastiCacheCluster
+    Export:
+      Name: !Sub ${AWS::StackName}-ElastiCacheClusterID
+
+  ElastiCacheEngine:
+    Description: ElastiCache engine
+    Value: !Ref CacheEngine
+    Export:
+      Name: !Sub ${AWS::StackName}-ElastiCacheEngine
