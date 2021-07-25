@@ -9,7 +9,6 @@ PubSub.log
 
 ### Gradle ###
 .gradle
-build/
 bin/
 
 # Ignore Gradle GUI config
