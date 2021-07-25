@@ -1,6 +1,7 @@
 .idea/
 .settings
 
+
 PubSub.log
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
@@ -9,6 +10,7 @@ PubSub.log
 ### Gradle ###
 .gradle
 build/
+bin/
 
 # Ignore Gradle GUI config
 gradle-app.setting
