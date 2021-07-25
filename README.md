@@ -30,7 +30,7 @@ Region: `Asia Pacific (Mumbai) ap-south-1`
 
 ### Accessible Resources
 - Elastic Container Registry (ECR)
-- Elastic Container Service (ECS)
+- Elastic Container Service (ECS) 
 - CloudFormation Stack
 - Elasticache (Redis)
 - Cloudwatch Logs
@@ -39,6 +39,8 @@ Region: `Asia Pacific (Mumbai) ap-south-1`
 - CodeBuild
 - VPC
 - S3
+
+Note: ECS task is stopped in account since I am getting charged for it. You can start 1 task to check if the ECS task is running and check task logs to verify the app functionality.
 
 ### Cloud formation templates
 - [EC2](./Ec2-tutuka.yml)
