@@ -61,3 +61,19 @@ Note: ECS task is stopped in account since I am getting charged for it. You can 
 [Sample test report here](./build/reports/tests/test/index.html)
 
 ![sample test report screenshot](https://github.com/MohanSha/tutuka/blob/master/Test%20Report%20Screenshot.png)
+
+### Run Unit Tests via Docker
+Copy and paste the below commands to run unit tests in Docker container and check the test logs.
+#### Local Build 
+```
+docker build -f Dockerfile.unittest -t mohansha/tutuka-app:unittest .
+docker run -d --name tutuka-app mohansha/tutuka-app:unittest
+docker logs tutuka-app
+```
+
+#### From Docker Hub
+```
+docker pull mohansha/tutuka-app:unittest
+docker run -d --name tutuka-app mohansha/tutuka-app:unittest
+docker logs tutuka-app
+```
